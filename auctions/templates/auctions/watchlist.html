@@ -1,0 +1,29 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<h2 xmlns="http://www.w3.org/1999/html">{{username}}'s Watchlist</h2>
+
+    <style>table, th, tr {
+    border:1px solid grey;
+  }
+  .table_1 {
+      margin-left: auto;
+      margin-right: auto;
+      border-collapse: collapse;
+  }
+  </style>
+    <table class="table_1" cellspacing="0" cellpadding="5" width="100%">
+    {% for listing in listings%}    
+        <tr>{% if listing.image is not NONE %}
+            <td width="250" height="250"><img src="{{listing.image.url}}" height="250" width="250" display="block"></td>
+            {% endif %}
+            <td height="100"><a href="{% url 'listing' id=listing.id title=listing.title%}">{{listing.title}}</a><br>
+            {{listing.description}}<br>
+            {{listing.starting_bid}}</td>
+        </tr>
+    {% empty %}
+        <tr><td>You have no listings in your watchlist</td></tr>
+    {% endfor %}
+    </table>
+    
+{% endblock %}

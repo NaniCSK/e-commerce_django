@@ -1,0 +1,51 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>{{listing.title}}</h2>
+    <p>{{listing.description}}</p>
+    <p>Starting Bid: {{listing.starting_bid}}</p>
+    {% if listing not in user_watchlist %}
+      <p><a href="{% url 'add_to_watchlist' listing.id %}">Add to Watchlist</a></p>
+    {% else %}
+      <p><a href="{% url 'add_to_watchlist' listing.id %}">Remove from Watchlist</a></p>
+    {% endif %}
+    {% if listing.is_active == True and listing.user != user and current_users_bid is None%}
+      <a href="{% url 'place_bid' listing.id %}">Place bid</a>
+    {% elif listing.is_active == True and listing.user != user and current_users_bid is not None%}
+      <p>Your bid: ${{current_users_bid}}</p>
+      <a href="{% url 'place_bid' listing.id %}">Place new bid</a>
+    {% elif listing.is_active == True and listing.user == user and highest_bider is not None %}
+      <p>Current highest bid:</p><p> ${{current_bid}}</p>
+    {% elif highest_bider is None %}
+      <p>No biders yet</p>
+    {% elif listing.user == user %}
+      <p> This listing has ended. Highest bid is ${{current_bid}}</p>
+    {% endif %}
+    {% if listing.is_active == True and listing.user == user %}
+      <a href="{% url 'close_auction' id=listing.id %}">Close</a>
+    {% elif listing.is_active == False and listing.user == user %}
+      <p>Auction won by {{highest_bider}} and bid is ${{current_bid}}</p>
+    {% endif %}
+    <br>
+    <img src="{{listing.image.url}}">
+    <h3>Comments</h3>
+
+    {% for comment in comments %}
+        <div class="comments" style="padding: 10px;"> 
+         <p class="font-weight-bold"> 
+           {{ comment.name }} 
+           <span class=" text-muted font-weight-normal"> 
+             {{ comment.created_at }}
+            </span>
+          </p>
+          {{ comment.comment | linebreaks }}
+        </div>
+    {% endfor %}
+        <h3>Leave a comment</h3>
+        <form method="post" style="margin-top: 1.3em;">
+          {{ commentform.as_p }}
+          {% csrf_token %}
+          <button type="submit" class="btn btn-primary  btn-lg">Submit</button>
+        </form>
+    
+{% endblock %}
